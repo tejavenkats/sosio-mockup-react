@@ -10,6 +10,7 @@ import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import avatar from "../images/avatar.png";
+import {connect} from "react-redux";
 
 const useStyles = makeStyles({
   button: {
@@ -46,13 +47,12 @@ const useStyles = makeStyles({
   },
 });
 
-export default function CreateTweet(props) {
+function CreateTweet(props) {
   const classes = useStyles();
 
   const [tweet, setTweet] = useState({
     title: "",
     content: "",
-    buttonClicked: false,
   });
 
   function handleOnChange(event) {
@@ -61,12 +61,37 @@ export default function CreateTweet(props) {
     setTweet((prevVal) => {
       if (name === "titleField") {
         return { ...prevVal, title: value };
+        
       } else if (name === "contentField") {
         return { ...prevVal, content: value };
       }
     });
   }
 
+  function handleOnClick(event){
+    const tweetPostBin = {
+      title: tweet.title,
+      content: tweet.content
+    }
+
+    fetch('https://postb.in/1597933615757-1540582636371?'+JSON.stringify(tweetPostBin))
+    .then(response => response.json())
+    .then(data => console.log(data));;
+    if (tweet.title !== "" && tweet.content !== "") {
+      props.dispatch({
+        type: 'add_to_tweets',
+        payload: tweet
+        
+      });
+    } else {
+      alert("Please fill both the fields");
+    }
+    setTweet({
+      title: "",
+      content: "",
+    });
+    event.preventDefault();
+  }
   var accAttributes = {
     className: classes.acc,
   };
@@ -102,19 +127,7 @@ export default function CreateTweet(props) {
             color="default"
             className={classes.button}
             endIcon={<CreateIcon />}
-            onClick={(event) => {
-              if (tweet.title !== "" && tweet.content !== "") {
-                props.onAdd(tweet);
-              } else {
-                alert("Please fill both the fields");
-              }
-              setTweet({
-                title: "",
-                content: "",
-                buttonClicked: true,
-              });
-              event.preventDefault();
-            }}
+            onClick={handleOnClick}
           >
             Create
           </Button>
@@ -160,3 +173,16 @@ export function Tweet(props) {
     </div>
   );
 }
+
+function mapStateToProps(state){
+  return {
+    tweet: {
+      title: state.title,
+      content: state.content
+    },
+    tweets : state.tweets
+  }
+}
+
+export default connect(mapStateToProps)(CreateTweet);
+connect(mapStateToProps)(Tweet);

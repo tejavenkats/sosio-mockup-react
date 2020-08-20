@@ -1,30 +1,25 @@
-import React, { useState } from "react";
+import React from "react";
 import Grid from "@material-ui/core/Grid";
 import UserBio from "./UserBio";
 import CreateTweet from "./CreateTweet";
 import { Tweet } from "./CreateTweet";
 import { Typography } from "@material-ui/core";
+import {connect} from "react-redux";
 
-export default function Body() {
-  const [tweetsArr, setTweetsArr] = useState([]);
-
-  function onAddTemp(tweet) {
-    setTweetsArr((prevVal) => {
-      return [...prevVal, tweet];
-    });
-  }
+function Body(props) {
+ 
 
   return (
     <div>
       <Grid container>
         <Grid item xs={6} align="center">
           <UserBio
-            username="Nicole Kidman"
-            tagline="Actress at hollywood, could've been Jimmy fallon's wife!"
+            username={props.username}
+            tagline={props.tagline}
           />
         </Grid>
         <Grid item xs={6} align="center">
-          <CreateTweet onAdd={onAddTemp} />
+          <CreateTweet  />
         </Grid>
       </Grid>
       <hr
@@ -34,7 +29,7 @@ export default function Body() {
           border: "1px solid black",
         }}
       />
-      {tweetsArr.length === 0 ? (
+      {props.tweets.length === 0 ? (
         <Typography
           variant="h4"
           style={{
@@ -45,7 +40,7 @@ export default function Body() {
             marginRight: "auto",
           }}
         >
-          No Recent Tweets by Nicole Kidman. Create some Tweets, Go ahead.
+          No Recent Tweets by {props.username}. Create some Tweets, Go ahead.
         </Typography>
       ) : (
         <Typography
@@ -58,11 +53,11 @@ export default function Body() {
             marginRight: "auto",
           }}
         >
-          Recent Tweets by Nicole Kidman
+          Recent Tweets by {props.username}
         </Typography>
       )}
 
-      {tweetsArr.map((singleTweet, index) => {
+      {props.tweets.map((singleTweet, index) => {
         return (
           <Tweet
             title={singleTweet.title}
@@ -82,3 +77,13 @@ export default function Body() {
     </div>
   );
 }
+
+function mapStateToProps(state){
+  return {
+    username: state.username,
+    tagline: state.tagline,
+    tweets: state.tweets,
+  }
+}
+
+export default connect(mapStateToProps)(Body);

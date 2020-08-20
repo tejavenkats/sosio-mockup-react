@@ -1,15 +1,13 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
+import {connect} from "react-redux";
 
 const useStyles = makeStyles({
   root: {
-    // padding: "1rem",
     marginTop: "4rem",
-
     width: "15rem",
     height: "auto",
-    // boxShadow: "0px 2px 2px 2px rgba(0,0,0,0.25)",
   },
 });
 
@@ -23,4 +21,11 @@ function UserBio(props) {
   );
 }
 
-export default UserBio;
+function mapStateToProps(state){
+    return {
+      username: state.username,
+      tagline: state.tagline
+    }
+}
+
+export default connect(mapStateToProps)(UserBio);
